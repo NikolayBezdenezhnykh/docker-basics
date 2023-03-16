@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+  
+  dockerbasics:
+    image: nikolaybezdenezhnykh/docker-basics:0.1
+    environment:
+      - 'ConnectionStrings:DefaultConnection=User ID=DockerBasicsUser;Password=password123;Server=postgres;Port=5432;Database=DockerBasicsDb'
+    ports:
+      - 8000:80
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      dockerbasics:
+        aliases:
+          - dockerbasics      
+  
+  postgres:
+    image: postgres:15.2
+    environment:
+      - POSTGRES_DB=DockerBasicsDb      
+      - POSTGRES_USER=DockerBasicsUser
+      - POSTGRES_PASSWORD=password123
+    volumes:
+      - .:/docker-entrypoint-initdb.d
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    restart: always
+    networks:
+      dockerbasics:
+        aliases:
+          - postgres
+
+  pgadmin:
+    image: dpage/pgadmin4:6.21
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "nikolai200290@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "pgadminpassword"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - 5050:80
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+     dockerbasics:
+        aliases:
+          - pgadmin
+
+networks:
+  dockerbasics:
+
+volumes:
+  pgdata:
+  pgadmin:
+      

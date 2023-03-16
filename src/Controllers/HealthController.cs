@@ -9,7 +9,7 @@ namespace DockerBasics.Controllers
         [HttpGet]
         public IActionResult Check()
         {
-            return Ok();
+            return Ok(new { Status = "OK" });
         }
     }
 }

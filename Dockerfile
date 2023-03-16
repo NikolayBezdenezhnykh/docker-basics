@@ -3,9 +3,9 @@ ARG netsdk_ver=6.0
 
 FROM mcr.microsoft.com/dotnet/sdk:${netsdk_ver} AS build
 WORKDIR /src
-COPY *.csproj .
+COPY src/*.csproj .
 RUN dotnet restore
-COPY . .
+COPY src .
 RUN dotnet build -c Release --no-restore
 
 FROM build AS publish
